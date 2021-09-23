@@ -1,0 +1,15 @@
+services: docker
+
+script:
+  - export VERSION="20.10.7"
+  - export IMAGE_BASE="fortizarhu/docker-dind:$VERSION"
+  - export TS=$(date +"%Y%m%d%H%M")
+  - export IMAGE_TAG="$IMAGE_BASE-$TS"
+  - export IMAGE_LATEST="$IMAGE_BASE-latest"
+  - docker build --no-cache -f Dockerfile -t "$IMAGE_TAG" .
+  - docker tag "$IMAGE_TAG" "$IMAGE_LATEST"
+
+after_success:
+  - docker login --username="$DOCKER_USERNAME" --password="$DOCKER_PASSWORD"
+  - docker push "$IMAGE_TAG"
+  - docker push "$IMAGE_LATEST"
